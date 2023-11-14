@@ -5,3 +5,22 @@
   margin: 10px;
   display: inline-block;
 }
+
+.red.revealed {
+  background-color: red;
+}
+.orange.revealed {
+  background-color: orange;
+}
+.yellow.revealed {
+  background-color: yellow;
+}
+.green.revealed {
+  background-color: green;
+}
+.blue.revealed {
+  background-color: blue;
+}
+.purple.revealed {
+  background-color: purple;
+}
