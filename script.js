@@ -73,6 +73,7 @@ function createDivsForColors(colorArray) {
   }
 }
 
+// no card ID chosen state
 let storedCardID = null;
 
 // TODO: Implement this function!
@@ -89,7 +90,6 @@ function handleCardClick(event) {
 
     if (flipped === 2) {
       checkCardMatch(selectedCards);
-      selectedCards = [];
       guesses++;
       guessContainer.innerText = 'Guess #: ' + guesses;
     }
@@ -125,7 +125,6 @@ function checkCardMatch(listOfCards) {
     } else {
       for (let card of listOfCards) {
         card.classList.remove('revealed');
-        storedCardID = null;
       }
       console.log('not a match!')
     }
@@ -137,7 +136,9 @@ function checkCardMatch(listOfCards) {
       localStorage.setItem('currentScore', JSON.stringify(finalScore));
       highscoreContainer.innerText = 'Highscore: ' + getLowestScore(finalScore);
     }
+    storedCardID = null;
     flipped = 0;
+    selectedCards = [];
   }, 1000);
 }
 
