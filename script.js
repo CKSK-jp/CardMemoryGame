@@ -1,4 +1,7 @@
 const gameContainer = document.getElementById("game");
+const guessContainer = document.getElementById('guess-count');
+const highscoreContainer = document.getElementById('highscore');
+const resetButton = document.querySelector('#resetGame');
 
 const COLORS = [
   "red",
@@ -40,7 +43,8 @@ let shuffledColors = shuffle(COLORS);
 let selectedCards = [];
 let flipped = 0;
 let gameOver = false;
-let n = 1;
+let n = 0; //counter to set unique id for each card
+let guesses = 0;
 
 // this function loops over the array of colors
 // it creates a new div and gives it a class with the value of the color
@@ -76,58 +80,107 @@ function handleCardClick(event) {
   // you can use event.target to see which element was clicked
   // console.log("you just clicked", event.target);
   const selectedCard = event.target;
-  let isMatched = selectedCard.classList[2]
+  const isMatched = selectedCard.classList[2];
   if (isMatched === 'matched') {
     console.log('this card has been', isMatched);
   } else {
-    let currentCardID = selectedCard.id;
     selectedCard.classList.add('revealed');
-    if (storedCardID === null) {
-      storedCardID = currentCardID;
-      selectedCards.push(selectedCard);
-      flipped++;
-    } else if (storedCardID !== currentCardID) {
-      selectedCards.push(selectedCard);
-      flipped++;
-      console.log('different card selected', flipped);
-    }
-    console.log(selectedCards)
+    checkCardID(selectedCard);
 
     if (flipped === 2) {
-      setTimeout(() => {
-        if (selectedCards[0].classList[0] == selectedCards[1].classList[0]) {
-          for (let card of selectedCards) {
-            card.classList.add('matched');
-          }
-        } else {
-          for (let card of selectedCards) {
-            card.classList.remove('revealed');
-            storedCardID = null;
-          }
-        }
-        flipped = 0;
-        selectedCards = [];
-
-        if (document.querySelectorAll('.revealed').length === COLORS.length) {
-          gameOver = true;
-          return;
-        }
-      }, 1000);
-      const numRevealed = document.querySelectorAll('.revealed').length;
-      console.log(`num of cards flipped: ${flipped}, game over? ${gameOver}, number of cards revealed: ${numRevealed}`);
+      checkCardMatch(selectedCards);
+      selectedCards = [];
+      guesses++;
+      guessContainer.innerText = 'Guess #: ' + guesses;
     }
   }
 }
 
-const resetButton = document.querySelector('#resetGame');
+
+
+// check if the id of the currently selected card differs from the previous card.
+function checkCardID(card) {
+  let currentCardID = card.id;
+  if (storedCardID === null) {
+    storedCardID = currentCardID;
+    selectedCards.push(card);
+    console.log('first card selected');
+    return flipped++;
+  } else if (storedCardID !== currentCardID) {
+    selectedCards.push(card);
+    console.log('different card selected');
+    return flipped++;
+  } else {
+    console.log('same card selected!');
+  }
+}
+
+function checkCardMatch(listOfCards) {
+  setTimeout(() => {
+    if (listOfCards[0].classList[0] == listOfCards[1].classList[0]) {
+      for (let card of listOfCards) {
+        card.classList.add('matched');
+      }
+      console.log('matched!');
+    } else {
+      for (let card of listOfCards) {
+        card.classList.remove('revealed');
+        storedCardID = null;
+      }
+      console.log('not a match!')
+    }
+    // check if user matches everything
+    const numRevealed = document.querySelectorAll('.revealed').length;
+    if (numRevealed === COLORS.length) {
+      let finalScore = guesses;
+      console.log('GOOD JOB! Final Score: ' + finalScore);
+      localStorage.setItem('currentScore', JSON.stringify(finalScore));
+      highscoreContainer.innerText = 'Highscore: ' + getLowestScore(finalScore);
+    }
+    flipped = 0;
+  }, 1000);
+}
+
+function getLowestScore(score) {
+  let currentScore = JSON.parse(localStorage.getItem('currentScore'));
+  let bestScore = JSON.parse(localStorage.getItem('bestScore'));
+  // if you have no highscore then set current score as the new best score
+  if (bestScore === null) {
+    localStorage.setItem('bestScore', JSON.stringify(score));
+    console.log('setted a new highscore!')
+    return score;
+    // if user beats old score, replace oldscore with new score, return new score
+  } else if (score < bestScore) {
+    localStorage.setItem('bestScore', JSON.stringify(score));
+    console.log('New HIGHSCORE!');
+    return currentScore;
+    // if user doesnt beat the old score, then return the best score on storage;
+  } else {
+    console.log('you didnt beat your score!');
+    return bestScore;
+  }
+}
+
 resetButton.addEventListener('click', function () {
-  console.log('pressed!');
   let resetClasses = ['revealed', 'matched'];
   let cards = document.querySelectorAll('.revealed');
-  console.log(cards[0].classList);
   for (let i = 0; i < cards.length; i++) {
     cards[i].classList.remove(...resetClasses);
   }
+  guesses = 0;
+  guessContainer.innerText = 'Guess #: ' + guesses;
+
+  gameContainer.innerHTML = '';
+  createDivsForColors(shuffledColors);
 })
+
+// retrieve saved highscore
+let savedHighscore = JSON.parse(localStorage.getItem('bestScore'));
+if (savedHighscore == null) {
+  highscoreContainer.innerHTML = 'Highscore: ' + 0;
+} else {
+  highscoreContainer.innerHTML = 'Highscore:' + savedHighscore;
+}
+
 // when the DOM loads
 createDivsForColors(shuffledColors);
