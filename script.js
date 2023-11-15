@@ -37,6 +37,10 @@ function shuffle(array) {
 }
 
 let shuffledColors = shuffle(COLORS);
+let selectedCards = [];
+let flipped = 0;
+let gameOver = false;
+let n = 1;
 
 // this function loops over the array of colors
 // it creates a new div and gives it a class with the value of the color
@@ -49,52 +53,81 @@ function createDivsForColors(colorArray) {
     // give it a class attribute for the value we are looping over
     newDiv.classList.add(color);
 
+    // add unique id for each card
+    newDiv.setAttribute('id', 'card' + n.toString())
+    n++;
     // call a function handleCardClick when a div is clicked on
-    newDiv.addEventListener("click", handleCardClick);
+    // ensure that only two cards can be flipped
+    newDiv.addEventListener("click", function (event) {
+      if (flipped < 2) {
+        handleCardClick(event);
+      }
+    });
 
     // append the div to the element with an id of game
     gameContainer.append(newDiv);
   }
 }
 
-let selectedCards = [];
-let flipped = 0;
-let gameOver = false;
+let storedCardID = null;
 
 // TODO: Implement this function!
 function handleCardClick(event) {
   // you can use event.target to see which element was clicked
   // console.log("you just clicked", event.target);
   const selectedCard = event.target;
-  // const cardValue = selectedCard.className;
-  // console.log(cardValue);
-  selectedCard.classList.add('revealed');
-  selectedCards.push(selectedCard);
-  flipped += 1;
+  let isMatched = selectedCard.classList[2]
+  if (isMatched === 'matched') {
+    console.log('this card has been', isMatched);
+  } else {
+    let currentCardID = selectedCard.id;
+    selectedCard.classList.add('revealed');
+    if (storedCardID === null) {
+      storedCardID = currentCardID;
+      selectedCards.push(selectedCard);
+      flipped++;
+    } else if (storedCardID !== currentCardID) {
+      selectedCards.push(selectedCard);
+      flipped++;
+      console.log('different card selected', flipped);
+    }
+    console.log(selectedCards)
 
-  // console.log(selectedCards[0].classList[0] == selectedCards[1].classList[0], numRevealed); 
-  if (flipped === 2) {
-    setTimeout(() => {
-      if (selectedCards[0].classList[0] == selectedCards[1].classList[0]) {
-        for (let card of selectedCards) {
-          card.classList.add('matched');
+    if (flipped === 2) {
+      setTimeout(() => {
+        if (selectedCards[0].classList[0] == selectedCards[1].classList[0]) {
+          for (let card of selectedCards) {
+            card.classList.add('matched');
+          }
+        } else {
+          for (let card of selectedCards) {
+            card.classList.remove('revealed');
+            storedCardID = null;
+          }
         }
-      } else {
-        for (let card of selectedCards) {
-          card.classList.remove('revealed');
-        }
-      }
-      flipped = 0;
-      selectedCards = [];
+        flipped = 0;
+        selectedCards = [];
 
-      if (document.querySelectorAll('.revealed').length === COLORS.length) {
-        gameOver = true;
-        return;
-      }
-    }, 1000);
+        if (document.querySelectorAll('.revealed').length === COLORS.length) {
+          gameOver = true;
+          return;
+        }
+      }, 1000);
+      const numRevealed = document.querySelectorAll('.revealed').length;
+      console.log(`num of cards flipped: ${flipped}, game over? ${gameOver}, number of cards revealed: ${numRevealed}`);
+    }
   }
 }
 
-console.log(flipped, gameOver, selectedCards);
+const resetButton = document.querySelector('#resetGame');
+resetButton.addEventListener('click', function () {
+  console.log('pressed!');
+  let resetClasses = ['revealed', 'matched'];
+  let cards = document.querySelectorAll('.revealed');
+  console.log(cards[0].classList);
+  for (let i = 0; i < cards.length; i++) {
+    cards[i].classList.remove(...resetClasses);
+  }
+})
 // when the DOM loads
 createDivsForColors(shuffledColors);
