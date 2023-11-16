@@ -1,9 +1,9 @@
-const gameContainer = document.getElementById("game");
+const gameContainer = document.querySelector(".game-board");
 const guessContainer = document.getElementById('guess-count');
 const highscoreContainer = document.getElementById('highscore');
 const resetButton = document.querySelector('#resetGame');
 
-const COLORS = [
+const faceCards = [
   "red",
   "blue",
   "green",
@@ -18,9 +18,15 @@ const COLORS = [
   "cyan"
 ];
 
-// here is a helper function to shuffle an array
-// it returns the same array with values shuffled
-// it is based on an algorithm called Fisher Yates if you want to research more
+let shuffledfaceCards = shuffle(faceCards);
+let selectedCards = [];
+let flipped = 0;
+let gameOver = false;
+let n = 0; //counter to set unique id for each card
+let guesses = 0;
+guessContainer.innerText = 'Guess #: ' + guesses;
+
+// Helper function to shuffle using Fisher Yates algorithm 
 function shuffle(array) {
   let counter = array.length;
 
@@ -37,41 +43,34 @@ function shuffle(array) {
     array[counter] = array[index];
     array[index] = temp;
   }
-
   return array;
 }
 
-let shuffledColors = shuffle(COLORS);
-let selectedCards = [];
-let flipped = 0;
-let gameOver = false;
-let n = 0; //counter to set unique id for each card
-let guesses = 0;
+// Function loops over the array of faceCards creating a new div for each one
+// Also adds an event listener for a click for each card
+function createCards(faceArray) {
+  for (let face of faceArray) {
+    const newCardContainer = document.createElement("div");
+    newCardContainer.classList.add('card-container');
+    gameContainer.append(newCardContainer);
 
-// this function loops over the array of colors
-// it creates a new div and gives it a class with the value of the color
-// it also adds an event listener for a click for each card
-function createDivsForColors(colorArray) {
-  for (let color of colorArray) {
-    // create a new div
-    const newDiv = document.createElement("div");
+    const card = document.createElement('div');
+    card.classList.add('card');
+    newCardContainer.append(card);
 
-    // give it a class attribute for the value we are looping over
-    newDiv.classList.add(color);
+    const cardBack = document.createElement("div");
+    const cardFace = document.createElement("div");
+    cardBack.classList.add('card-body', 'card-back');
+    cardFace.classList.add('card-body', face);
+
+    card.append(cardBack);
+    card.append(cardFace);
 
     // add unique id for each card
-    newDiv.setAttribute('id', 'card' + n.toString())
+    card.setAttribute('id', 'card' + n.toString())
     n++;
-    // call a function handleCardClick when a div is clicked on
-    // ensure that only two cards can be flipped
-    newDiv.addEventListener("click", function (event) {
-      if (flipped < 2) {
-        handleCardClick(event);
-      }
-    });
 
-    // append the div to the element with an id of game
-    gameContainer.append(newDiv);
+    card.addEventListener("click", handleCardClick);
   }
 }
 
@@ -80,25 +79,26 @@ let storedCardID = null;
 
 // TODO: Implement this function!
 function handleCardClick(event) {
-  // you can use event.target to see which element was clicked
-  // console.log("you just clicked", event.target);
-  const selectedCard = event.target;
-  const isMatched = selectedCard.classList[2];
-  if (isMatched === 'matched') {
-    console.log('this card has been', isMatched);
-  } else {
-    selectedCard.classList.add('revealed');
-    checkCardID(selectedCard);
+  if (flipped < 2) {
+    const selectedCard = event.currentTarget;
+    const isMatched = selectedCard.classList[2];
+    console.log('num flipped:', flipped);
+    if (isMatched === 'matched') {
+      flipped = 0;
+      console.log('this card has been', isMatched);
+    } else {
+      selectedCard.classList.add('revealed');
+      console.log('has been revealed!');
+      checkCardID(selectedCard);
 
-    if (flipped === 2) {
-      checkCardMatch(selectedCards);
-      guesses++;
-      guessContainer.innerText = 'Guess #: ' + guesses;
+      if (flipped === 2) {
+        checkCardMatch(selectedCards);
+        guesses++;
+        guessContainer.innerText = 'Guess #: ' + guesses;
+      }
     }
   }
 }
-
-
 
 // check if the id of the currently selected card differs from the previous card.
 function checkCardID(card) {
@@ -119,7 +119,9 @@ function checkCardID(card) {
 
 function checkCardMatch(listOfCards) {
   setTimeout(() => {
-    if (listOfCards[0].classList[0] == listOfCards[1].classList[0]) {
+    firstFaceCard = listOfCards[0].querySelector(':nth-child(2)').classList[1];
+    secondFaceCard = listOfCards[1].querySelector(':nth-child(2)').classList[1];
+    if (firstFaceCard == secondFaceCard) {
       for (let card of listOfCards) {
         card.classList.add('matched');
       }
@@ -130,9 +132,10 @@ function checkCardMatch(listOfCards) {
       }
       console.log('not a match!')
     }
+
     // check if user matches everything
     const numRevealed = document.querySelectorAll('.revealed').length;
-    if (numRevealed === COLORS.length) {
+    if (numRevealed === faceCards.length) {
       let finalScore = guesses;
       console.log('GOOD JOB! Final Score: ' + finalScore);
       localStorage.setItem('currentScore', JSON.stringify(finalScore));
@@ -174,7 +177,7 @@ resetButton.addEventListener('click', function () {
   guessContainer.innerText = 'Guess #: ' + guesses;
 
   gameContainer.innerHTML = '';
-  createDivsForColors(shuffledColors);
+  createCards(shuffledfaceCards);
 })
 
 // retrieve saved highscore
@@ -186,4 +189,4 @@ if (savedHighscore == null) {
 }
 
 // when the DOM loads
-createDivsForColors(shuffledColors);
+createCards(shuffledfaceCards);

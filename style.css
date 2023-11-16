@@ -11,20 +11,116 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.score-area {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  gap: 5rem;
-  align-items: center;
-  width: 60%;
-}
+
 
 .game-board {
-  height: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 10px;
+  max-height: 80vh;
+  height: 80%;
   width: 80%;
   min-width: 500px;
-  max-width: 700px;
+  max-width: 800px;
+}
+
+.card-container {
+  height: 200px;
+  width: 145px;
+}
+
+.card {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transform-origin: center right;
+  transition: transform 1s;
+}
+
+.card.revealed{
+  transform: translateX(-100%) rotateY(-180deg);
+}
+
+.card-body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.card-back {
+  background-image: url('./cards/hearthstone-card-back.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.red {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-image: url('./cards/archmage.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: rotateY(180deg);
+  border-radius: 2rem;
+}
+
+.orange {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-image: url('./cards/edwin.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: rotateY(180deg);
+  border-radius: 2rem;
+}
+
+.cyan {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-image: url('./cards/grommash.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: rotateY(180deg);
+  border-radius: 2rem;
+}
+
+.green {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-image: url('./cards/spider.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: rotateY(180deg);
+  border-radius: 2rem;
+}
+
+.blue {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-image: url('./cards/jaraxx.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: rotateY(180deg);
+  border-radius: 2rem;
+}
+
+.purple {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-image: url('./cards/kingkrush.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: rotateY(180deg);
+  border-radius: 2rem;
 }
 
 h1 {
@@ -32,66 +128,33 @@ h1 {
   margin-bottom: 30px
 }
 
+.score-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  gap: 5rem;
+  align-items: center;
+  width: 80vh;
+}
+
 #highscore,
 #guess-count {
-  font-size: large;
+  font-size: x-large;
   font-weight: bold;
   color: white;
-  margin: 10px;
-}
-
-#game div {
-  /* border: 1px solid black; */
-  background-image: url('./hearthstone-card-back.png');
-  background-repeat: no-repeat;
-  background-size: cover;
-  width: 15%;
-  max-width: 150px;
-  min-width: 150px;
-  min-height: 210px;
-  max-height: 210px;
-  margin: 10px;
-  display: inline-block;
-}
-
-.red.revealed {
-  background-color: red;
-}
-
-.orange.revealed {
-  background-color: orange;
-}
-
-.yellow.revealed {
-  background-color: yellow;
-}
-
-.green.revealed {
-  background-color: green;
-}
-
-.blue.revealed {
-  background-color: blue;
-}
-
-.purple.revealed {
-  background-color: purple;
-}
-
-.cyan.revealed {
-  background-color: cyan;
 }
 
 button {
   width: 100px;
   height: 30px;
   font-style: italic;
-  color: black;
+  font-size: large;
+  color: white;
   font-weight: bold;
-  background-color: beige;
+  background-color: maroon;
   border-radius: 10px;
 }
 
 button:hover {
-  background-color: yellow;
+  background-color: red;
 }
