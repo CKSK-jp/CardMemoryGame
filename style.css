@@ -1,7 +1,55 @@
+body {
+  background-image: url('./heartstone-fireplace.jpeg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.score-area {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 5rem;
+  align-items: center;
+  width: 60%;
+}
+
+.game-board {
+  height: auto;
+  width: 80%;
+  min-width: 500px;
+  max-width: 700px;
+}
+
+h1 {
+  color: white;
+  margin-bottom: 30px
+}
+
+#highscore,
+#guess-count {
+  font-size: large;
+  font-weight: bold;
+  color: white;
+  margin: 10px;
+}
+
 #game div {
-  border: 1px solid black;
+  /* border: 1px solid black; */
+  background-image: url('./hearthstone-card-back.png');
+  background-repeat: no-repeat;
+  background-size: cover;
   width: 15%;
-  height: 200px;
+  max-width: 150px;
+  min-width: 150px;
+  min-height: 210px;
+  max-height: 210px;
   margin: 10px;
   display: inline-block;
 }
@@ -9,18 +57,41 @@
 .red.revealed {
   background-color: red;
 }
+
 .orange.revealed {
   background-color: orange;
 }
+
 .yellow.revealed {
   background-color: yellow;
 }
+
 .green.revealed {
   background-color: green;
 }
+
 .blue.revealed {
   background-color: blue;
 }
+
 .purple.revealed {
   background-color: purple;
+}
+
+.cyan.revealed {
+  background-color: cyan;
+}
+
+button {
+  width: 100px;
+  height: 30px;
+  font-style: italic;
+  color: black;
+  font-weight: bold;
+  background-color: beige;
+  border-radius: 10px;
+}
+
+button:hover {
+  background-color: yellow;
 }

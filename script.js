@@ -9,11 +9,13 @@ const COLORS = [
   "green",
   "orange",
   "purple",
+  "cyan",
   "red",
   "blue",
   "green",
   "orange",
-  "purple"
+  "purple",
+  "cyan"
 ];
 
 // here is a helper function to shuffle an array
@@ -180,7 +182,7 @@ let savedHighscore = JSON.parse(localStorage.getItem('bestScore'));
 if (savedHighscore == null) {
   highscoreContainer.innerHTML = 'Highscore: ' + 0;
 } else {
-  highscoreContainer.innerHTML = 'Highscore:' + savedHighscore;
+  highscoreContainer.innerHTML = 'Highscore: ' + savedHighscore;
 }
 
 // when the DOM loads
