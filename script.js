@@ -18,7 +18,6 @@ const faceCards = [
   "kingkrush"
 ];
 
-let shuffledfaceCards = shuffle(faceCards);
 let selectedCards = [];
 let flipped = 0;
 let gameOver = false;
@@ -42,6 +41,7 @@ function shuffle(array) {
 // Function loops over the array of faceCards creating a new div for each one
 // Also adds an event listener for a click for each card
 function createCards(faceArray) {
+  shuffle(faceArray);
   for (let face of faceArray) {
     const newCardContainer = document.createElement("div");
     newCardContainer.classList.add('card-container');
@@ -75,8 +75,7 @@ function handleCardClick(event) {
     const isMatched = selectedCard.classList[2];
     console.log('num flipped:', flipped);
     if (isMatched === 'matched') {
-      flipped = 0;
-      console.log('this card has been', isMatched);
+      console.log('this card has been', isMatched, flipped);
     } else {
       selectedCard.classList.add('revealed');
       console.log('has been revealed!');
@@ -173,7 +172,7 @@ resetButton.addEventListener('click', function () {
   guessContainer.innerText = 'Guess #: ' + guesses;
 
   gameContainer.innerHTML = '';
-  createCards(shuffledfaceCards);
+  createCards(faceCards);
 })
 
 // retrieve saved highscore
@@ -185,4 +184,4 @@ if (savedHighscore == null) {
 }
 
 // when the DOM loads
-createCards(shuffledfaceCards);
+createCards(faceCards);
