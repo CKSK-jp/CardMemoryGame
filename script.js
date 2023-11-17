@@ -4,18 +4,18 @@ const highscoreContainer = document.getElementById('highscore');
 const resetButton = document.querySelector('#resetGame');
 
 const faceCards = [
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple",
-  "cyan",
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple",
-  "cyan"
+  "archmage",
+  "edwin",
+  "grommash",
+  "spider",
+  "jaraxx",
+  "kingkrush",
+  "archmage",
+  "edwin",
+  "grommash",
+  "spider",
+  "jaraxx",
+  "kingkrush"
 ];
 
 let shuffledfaceCards = shuffle(faceCards);
@@ -29,16 +29,9 @@ guessContainer.innerText = 'Guess #: ' + guesses;
 // Helper function to shuffle using Fisher Yates algorithm 
 function shuffle(array) {
   let counter = array.length;
-
-  // While there are elements in the array
   while (counter > 0) {
-    // Pick a random index
     let index = Math.floor(Math.random() * counter);
-
-    // Decrease counter by 1
     counter--;
-
-    // And swap the last element with it
     let temp = array[counter];
     array[counter] = array[index];
     array[index] = temp;
@@ -59,25 +52,23 @@ function createCards(faceArray) {
     newCardContainer.append(card);
 
     const cardBack = document.createElement("div");
-    const cardFace = document.createElement("div");
     cardBack.classList.add('card-body', 'card-back');
-    cardFace.classList.add('card-body', face);
-
     card.append(cardBack);
+
+    const cardFace = document.createElement("div");
+    cardFace.classList.add('card-body', face);
     card.append(cardFace);
 
     // add unique id for each card
     card.setAttribute('id', 'card' + n.toString())
     n++;
 
+    // initiate handleCardClick when card is clicked
     card.addEventListener("click", handleCardClick);
   }
 }
 
-// no card ID chosen state
-let storedCardID = null;
-
-// TODO: Implement this function!
+// validates user choice, if not a already matched card, add a reveal class and check the ID of the card
 function handleCardClick(event) {
   if (flipped < 2) {
     const selectedCard = event.currentTarget;
@@ -90,7 +81,7 @@ function handleCardClick(event) {
       selectedCard.classList.add('revealed');
       console.log('has been revealed!');
       checkCardID(selectedCard);
-
+      // if the user successfully flips 2 cards, check if they match
       if (flipped === 2) {
         checkCardMatch(selectedCards);
         guesses++;
@@ -100,6 +91,8 @@ function handleCardClick(event) {
   }
 }
 
+// no card ID chosen state
+let storedCardID = null;
 // check if the id of the currently selected card differs from the previous card.
 function checkCardID(card) {
   let currentCardID = card.id;
@@ -117,6 +110,7 @@ function checkCardID(card) {
   }
 }
 
+// grab the children class and compare to see if they match, add matched class to matching cards
 function checkCardMatch(listOfCards) {
   setTimeout(() => {
     firstFaceCard = listOfCards[0].querySelector(':nth-child(2)').classList[1];
@@ -137,7 +131,7 @@ function checkCardMatch(listOfCards) {
     const numRevealed = document.querySelectorAll('.revealed').length;
     if (numRevealed === faceCards.length) {
       let finalScore = guesses;
-      console.log('GOOD JOB! Final Score: ' + finalScore);
+      alert('GOOD JOB! Final Score: ' + finalScore);
       localStorage.setItem('currentScore', JSON.stringify(finalScore));
       highscoreContainer.innerText = 'Highscore: ' + getLowestScore(finalScore);
     }
@@ -147,6 +141,7 @@ function checkCardMatch(listOfCards) {
   }, 1000);
 }
 
+// grab scores from localStorage and check for highscore
 function getLowestScore(score) {
   let currentScore = JSON.parse(localStorage.getItem('currentScore'));
   let bestScore = JSON.parse(localStorage.getItem('bestScore'));
@@ -167,6 +162,7 @@ function getLowestScore(score) {
   }
 }
 
+// handle game reset
 resetButton.addEventListener('click', function () {
   let resetClasses = ['revealed', 'matched'];
   let cards = document.querySelectorAll('.revealed');
