@@ -1,2 +1,2 @@
 # CardMemoryGame
-Flip two matching cards, be rewarded!
+Hearthstone themed card matching game!
