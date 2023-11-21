@@ -18,10 +18,12 @@ const faceCards = [
   "kingkrush"
 ];
 
+let cards = [];
 let selectedCards = [];
+let selectedCardElements = [];
 let flipped = 0;
 let gameOver = false;
-let n = 0; //counter to set unique id for each card
+let uniqueId = 0; //counter to set unique id for each card
 let guesses = 0;
 guessContainer.innerText = 'Guess #: ' + guesses;
 
@@ -42,7 +44,14 @@ function shuffle(array) {
 // Also adds an event listener for a click for each card
 function createCards(faceArray) {
   shuffle(faceArray);
+
   for (let face of faceArray) {
+    const cardObject = {
+      face: '',
+      id: '',
+      revealed: false,
+      matched: false,
+    };
     const newCardContainer = document.createElement("div");
     newCardContainer.classList.add('card-container');
     gameContainer.append(newCardContainer);
@@ -58,31 +67,37 @@ function createCards(faceArray) {
     const cardFace = document.createElement("div");
     cardFace.classList.add('card-body', face);
     card.append(cardFace);
+    // add the face to the card property
+    cardObject.face = face;
 
-    // add unique id for each card
-    card.setAttribute('id', 'card' + n.toString())
-    n++;
+    // add unique id to card property
+    card.setAttribute('data-index', uniqueId);
+    cardObject.id = uniqueId.toString();
+    uniqueId++;
+    cards.push(cardObject);
 
     // initiate handleCardClick when card is clicked
-    card.addEventListener("click", handleCardClick);
+    card.addEventListener("click", (event) => handleCardClick(event, cards));
   }
 }
 
 // validates user choice, if not a already matched card, add a reveal class and check the ID of the card
-function handleCardClick(event) {
+function handleCardClick(event, cards) {
+  const cardIndex = event.currentTarget.dataset.index;
+  const selectedCard = cards[cardIndex];
+  const cardElement = document.querySelector(`[data-index="${cardIndex}"]`);
   if (flipped < 2) {
-    const selectedCard = event.currentTarget;
-    const isMatched = selectedCard.classList[2];
-    console.log('num flipped:', flipped);
-    if (isMatched === 'matched') {
-      console.log('this card has been', isMatched, flipped);
+    ;
+    if (selectedCard.matched === true) {
+      console.log('this card has been matched');
     } else {
-      selectedCard.classList.add('revealed');
-      console.log('has been revealed!');
-      checkCardID(selectedCard);
+      // set card revealed property to true
+      selectedCard.revealed = true;
+      cardElement.classList.add('revealed');
+      checkCardID(selectedCard, cardElement);
       // if the user successfully flips 2 cards, check if they match
       if (flipped === 2) {
-        checkCardMatch(selectedCards);
+        checkCardMatch(selectedCards, selectedCardElements);
         guesses++;
         guessContainer.innerText = 'Guess #: ' + guesses;
       }
@@ -93,15 +108,17 @@ function handleCardClick(event) {
 // no card ID chosen state
 let storedCardID = null;
 // check if the id of the currently selected card differs from the previous card.
-function checkCardID(card) {
+function checkCardID(card, cardEle) {
   let currentCardID = card.id;
   if (storedCardID === null) {
-    storedCardID = currentCardID;
+    storedCardID = card.id;
     selectedCards.push(card);
+    selectedCardElements.push(cardEle);
     console.log('first card selected');
     return flipped++;
   } else if (storedCardID !== currentCardID) {
     selectedCards.push(card);
+    selectedCardElements.push(cardEle);
     console.log('different card selected');
     return flipped++;
   } else {
@@ -110,21 +127,28 @@ function checkCardID(card) {
 }
 
 // grab the children class and compare to see if they match, add matched class to matching cards
-function checkCardMatch(listOfCards) {
+function checkCardMatch(listOfCards, currentCardEles) {
   setTimeout(() => {
-    firstFaceCard = listOfCards[0].querySelector(':nth-child(2)').classList[1];
-    secondFaceCard = listOfCards[1].querySelector(':nth-child(2)').classList[1];
-    if (firstFaceCard == secondFaceCard) {
+    if (listOfCards[0].face == listOfCards[1].face) {
       for (let card of listOfCards) {
-        card.classList.add('matched');
+        card.matched = true;
       }
       console.log('matched!');
     } else {
       for (let card of listOfCards) {
-        card.classList.remove('revealed');
+        card.revealed = false;
+      }
+      for (let revealedCard of currentCardEles) {
+        revealedCard.classList.remove('revealed');
       }
       console.log('not a match!')
     }
+
+    storedCardID = null;
+    flipped = 0;
+    selectedCards = [];
+    selectedCardElements = [];
+
 
     // check if user matches everything
     const numRevealed = document.querySelectorAll('.revealed').length;
@@ -134,9 +158,6 @@ function checkCardMatch(listOfCards) {
       localStorage.setItem('currentScore', JSON.stringify(finalScore));
       highscoreContainer.innerText = 'Highscore: ' + getLowestScore(finalScore);
     }
-    storedCardID = null;
-    flipped = 0;
-    selectedCards = [];
   }, 1000);
 }
 
@@ -163,15 +184,20 @@ function getLowestScore(score) {
 
 // handle game reset
 resetButton.addEventListener('click', function () {
-  let resetClasses = ['revealed', 'matched'];
-  let cards = document.querySelectorAll('.revealed');
-  for (let i = 0; i < cards.length; i++) {
-    cards[i].classList.remove(...resetClasses);
-  }
+  cards = [];
+  selectedCards = [];
+  selectedCardElements = [];
+  flipped = 0;
+  uniqueId = 0;
   guesses = 0;
-  guessContainer.innerText = 'Guess #: ' + guesses;
 
+  guessContainer.innerText = 'Guess #: ' + guesses;
   gameContainer.innerHTML = '';
+
+  let cardElements = document.querySelectorAll('.revealed');
+  for (let i = 0; i < cards.length; i++) {
+    cardElements[i].classList.remove('revealed');
+  }
   createCards(faceCards);
 })
 
